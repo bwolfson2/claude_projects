@@ -5,6 +5,8 @@
   "author": {
     "name": "VFT"
   },
+  "repository": "https://github.com/bwolfson2/claude_projects",
+  "license": "MIT",
   "keywords": [
     "venture-capital",
     "due-diligence",
@@ -14,5 +16,6 @@
     "deal-flow",
     "crm",
     "fund-management"
-  ]
+  ],
+  "skills": "./skills/"
 }
