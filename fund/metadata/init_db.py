@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS transcripts (
 -- ============================================================
 CREATE TABLE IF NOT EXISTS messages (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
-    source          TEXT NOT NULL CHECK (source IN ('outlook', 'slack', 'whatsapp', 'signal', 'granola', 'web')),
+    source          TEXT NOT NULL CHECK (source IN ('outlook', 'slack', 'whatsapp', 'signal', 'granola', 'web', 'calendar', 'file_intake')),
     source_id       TEXT NOT NULL,                       -- original dedup key
     type            TEXT NOT NULL CHECK (type IN ('email', 'message', 'transcript', 'thread', 'document', 'scrape')),
     sender          TEXT,
@@ -72,6 +72,7 @@ CREATE TABLE IF NOT EXISTS messages (
     raw_path        TEXT,
     metadata        TEXT DEFAULT '{{}}',                 -- JSON for source-specific extras
     classified      INTEGER DEFAULT 0,
+    routed_at       TEXT,                              -- set by reactive-router when processed
     created_at      TEXT DEFAULT (datetime('now')),
     UNIQUE(source, source_id)
 );

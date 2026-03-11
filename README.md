@@ -1,6 +1,6 @@
 # vft-fund-tools
 
-A Claude Code / Cowork plugin for VC fund management. 30 skills and 5 slash commands covering the full fund workflow: deal sourcing, dataroom diligence, document processing, communication scanning, project management, and unified dashboards.
+A Claude Code / Cowork plugin for VC fund management. 31 skills and 13 slash commands covering the full fund workflow: deal sourcing, dataroom diligence, document processing, communication scanning, reactive monitoring, project management, and unified dashboards.
 
 ## Install
 
@@ -20,15 +20,32 @@ Open Cowork tab > Customize > Browse plugins > Install `vft-fund-tools`, or uplo
 
 ## Commands
 
+### Core Workflow
 | Command | Description |
 |---------|-------------|
 | `/vft-fund-tools:status` | Unified dashboard across all workstreams |
 | `/vft-fund-tools:new-deal` | Onboard a new company into the deal pipeline |
-| `/vft-fund-tools:process-dataroom` | Extract and analyze dataroom documents |
-| `/vft-fund-tools:scan-comms` | Scan all communication channels |
 | `/vft-fund-tools:new-project` | Create a new project workspace |
+| `/vft-fund-tools:process-dataroom` | Extract and analyze dataroom documents |
+| `/vft-fund-tools:ingest` | Point at any URL, folder, or Drive link — auto-classify and route |
 
-## Skills (auto-invoked)
+### Summaries & Memos
+| Command | Description |
+|---------|-------------|
+| `/vft-fund-tools:summarize-deal` | Current-state deal summary with findings, risks, and next actions |
+| `/vft-fund-tools:summarize-week` | Weekly digest across all workstreams |
+| `/vft-fund-tools:summarize-thread` | Summarize any conversation thread |
+| `/vft-fund-tools:write-memo` | Generate an IC-ready investment memo |
+
+### Monitoring & Automation
+| Command | Description |
+|---------|-------------|
+| `/vft-fund-tools:scan-comms` | Scan all communication channels |
+| `/vft-fund-tools:monitor` | Full sweep: scan → classify → reactively dispatch workflows |
+| `/vft-fund-tools:watch` | Set up scheduled monitoring for all data feeds |
+| `/vft-fund-tools:calendar` | Review upcoming meetings and auto-prep for calls |
+
+## Skills (31, auto-invoked)
 
 ### Due Diligence
 - **dataroom-intake** — Inventory and categorize dataroom files
@@ -56,6 +73,9 @@ Open Cowork tab > Customize > Browse plugins > Install `vft-fund-tools`, or uplo
 - **transcript-ingestion** — Meeting transcript ingestion
 - **message-ingestion** — Unified message storage
 
+### Monitoring & Routing
+- **reactive-router** — Analyze incoming messages and dispatch workflows (dataroom processing, meeting prep, deal creation, urgent flagging)
+
 ### Research
 - **web-researcher** — Company and market research via Chrome
 - **data-puller** — API and web data fetching
@@ -78,10 +98,29 @@ Connect external tools to supercharge the plugin:
 
 | Connector | Skills Enhanced |
 |-----------|----------------|
-| **Outlook** | email-scanner, comms-hub |
+| **Outlook** | email-scanner, comms-hub, calendar |
 | **Slack** | slack-scanner, comms-hub |
-| **Google Drive** | dataroom-intake, document-processor |
+| **Google Drive** | dataroom-intake, document-processor, ingest |
+| **Google Calendar** | calendar, monitor (morning prep) |
 | **Granola** | transcript-ingestion |
+
+## Reactive Monitoring
+
+The `/monitor` command and `reactive-router` skill form a closed-loop system:
+
+```
+Data Feeds (email, Slack, WhatsApp, Signal, calendar, file drops)
+    ↓ scan
+Messages Table (ingestion.db)
+    ↓ classify
+Classification Log (deal/project matching)
+    ↓ route
+Reactive Router (pattern matching → action plan)
+    ↓ execute
+Fund Workflows (dataroom processing, deal creation, meeting prep, alerts)
+```
+
+Use `/watch` to automate this on a schedule.
 
 ## Dependencies
 
