@@ -1,0 +1,24 @@
+{
+  "mcpServers": {
+    "outlook": {
+      "type": "url",
+      "url": "https://mcp.microsoft365.com/outlook",
+      "note": "Outlook email access for email-scanner skill. Connect via Cowork connectors."
+    },
+    "slack": {
+      "type": "url",
+      "url": "https://mcp.slack.com",
+      "note": "Slack workspace access for slack-scanner skill. Connect via Cowork connectors."
+    },
+    "google-drive": {
+      "type": "url",
+      "url": "https://mcp.google.com/drive",
+      "note": "Google Drive access for dataroom file retrieval. Connect via Cowork connectors."
+    },
+    "granola": {
+      "type": "url",
+      "url": "https://mcp.granola.ai",
+      "note": "Meeting transcript access for transcript-ingestion skill. Connect via Cowork connectors."
+    }
+  }
+}

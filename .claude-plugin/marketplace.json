@@ -1,16 +1,13 @@
 {
   "name": "vft-fund-tools",
-  "description": "VC fund management plugins for Claude Code",
+  "owner": {
+    "name": "VFT"
+  },
   "plugins": [
     {
       "name": "vft-fund-tools",
-      "version": "0.1.0",
-      "description": "VC fund management toolkit: deal flow CRM, dataroom diligence, document processing (RLM), communication scanners, project management, and unified dashboards. 30 skills.",
-      "source": {
-        "source": "github",
-        "repo": "bwolfson2/claude_projects",
-        "path": "."
-      }
+      "source": ".",
+      "description": "VC fund management toolkit: deal flow CRM, dataroom diligence, document processing (RLM), communication scanners, project management, and unified dashboards. 30 skills, 5 commands."
     }
   ]
 }
