@@ -1,0 +1,4 @@
+interface:
+  display_name: "Product Technical Diligence"
+  short_description: "Assess product, tech, and delivery"
+  default_prompt: "Use $product-technical-diligence to assess product quality, technical execution, and engineering risk."

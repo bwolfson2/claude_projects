@@ -1,0 +1,4 @@
+interface:
+  display_name: "Startup Diligence Orchestrator"
+  short_description: "Run full startup dataroom diligence"
+  default_prompt: "Use $startup-diligence-orchestrator to run a full diligence review on this startup dataroom."

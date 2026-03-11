@@ -1,0 +1,63 @@
+{
+  "schema_version": 2,
+  "fund_name": "Fund",
+  "last_updated": "2026-03-11",
+  "projects": [
+    {
+      "slug": "lp-quarterly-update-prep",
+      "project_name": "LP Quarterly Update Prep",
+      "name": "LP Quarterly Update Prep",
+      "project_type": "operations",
+      "category": "fundraising",
+      "status": "active",
+      "priority": "medium",
+      "owner": "fund",
+      "created": "2026-03-10",
+      "last_updated": "2026-03-10",
+      "description": "Auto-created from transcript \u2014 needs review",
+      "keywords": [
+        "lp",
+        "quarterly",
+        "update"
+      ],
+      "contact_emails": [],
+      "artifacts": {}
+    },
+    {
+      "slug": "lp-quarterly-update-prep-2",
+      "project_name": "LP Quarterly Update Prep",
+      "name": "LP Quarterly Update Prep",
+      "category": "uncategorized",
+      "status": "active",
+      "priority": "medium",
+      "owner": "fund",
+      "created": "2026-03-11",
+      "last_updated": "2026-03-11",
+      "description": "Auto-created from transcript \u2014 needs review",
+      "keywords": [],
+      "contact_emails": []
+    },
+    {
+      "slug": "senior-engineer-backend",
+      "project_name": "Senior Engineer - Backend",
+      "name": "Senior Engineer - Backend",
+      "project_type": "hiring",
+      "category": "hiring",
+      "status": "open",
+      "priority": "high",
+      "owner": "fund",
+      "created": "2026-03-11",
+      "last_updated": "2026-03-11",
+      "description": "",
+      "keywords": [
+        "senior",
+        "engineer",
+        "backend"
+      ],
+      "contact_emails": [],
+      "artifacts": {
+        "workspace": "/Users/nebnoseflow/due_diligences/projects/hiring/senior-engineer-backend"
+      }
+    }
+  ]
+}

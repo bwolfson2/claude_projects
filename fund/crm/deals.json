@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "fund_name": "Fund",
+  "last_updated": "2026-03-11",
+  "companies": [
+    {
+      "slug": "midbound",
+      "company_name": "Midbound, Inc.",
+      "status": "active",
+      "stage": "ic_prep",
+      "owner": "fund",
+      "source": "existing repo diligence",
+      "domains": [
+        "midbound.com"
+      ],
+      "contact_emails": [],
+      "sector": "B2B SaaS / visitor identification",
+      "round": "Pre-seed SAFE",
+      "raise_usd": 700000,
+      "valuation_cap_usd": 5000000,
+      "decision_posture": "lean_yes_assumption_based",
+      "priority": "high",
+      "last_touch": "2026-03-11",
+      "next_action": "Run document-processor on full dataroom",
+      "next_action_owner": "fund",
+      "next_action_due": "2026-03-15",
+      "thesis": "SMB-friendly person-level website identification and page-behavior analytics with a credible path to higher-value API and cloud deals.",
+      "open_questions": [
+        "Historical financials, cash balance, and billing-grade revenue support.",
+        "Completed penetration-test report and stronger security package.",
+        "Counsel-clean fully diluted cap table after SAFE dilution.",
+        "Same-traffic benchmark proving identification and contact accuracy versus RB2B and Vector."
+      ],
+      "assumptions": [
+        "Lilian Cruanes returned shares were properly distributed into the current founder structure.",
+        "Midbound data accuracy is genuinely high relative to direct alternatives."
+      ],
+      "artifacts": {
+        "company_workspace": "/Users/nebnoseflow/due_diligences/fund/companies/midbound",
+        "meeting_notes": "/Users/nebnoseflow/due_diligences/fund/companies/midbound/meetings/notes.md",
+        "ic_note": "/Users/nebnoseflow/due_diligences/fund/companies/midbound/diligence/ic-snapshot.md",
+        "dataroom": "/Users/nebnoseflow/due_diligences/fund/datarooms/midbound_dataroom",
+        "full_report": "/Users/nebnoseflow/due_diligences/review/midbound-diligence-report.md",
+        "short_memo": "/Users/nebnoseflow/due_diligences/review/midbound-short-memo.md"
+      },
+      "diligence": {
+        "commercial": "complete",
+        "product_technical": "complete",
+        "finance_legal": "blocked",
+        "memo": "complete"
+      }
+    },
+    {
+      "slug": "acmeai",
+      "company_name": "Acmeai",
+      "status": "active",
+      "stage": "sourced",
+      "owner": "fund",
+      "source": "auto_email_scanner",
+      "sector": "",
+      "round": "",
+      "raise_usd": 0,
+      "valuation_cap_usd": 0,
+      "decision_posture": "pending_review",
+      "priority": "medium",
+      "last_touch": "2026-03-10",
+      "next_action": "Review auto-created deal entry and complete details",
+      "next_action_owner": "fund",
+      "next_action_due": "",
+      "thesis": "",
+      "open_questions": [
+        "Auto-created from email \u2014 needs review"
+      ],
+      "assumptions": [],
+      "artifacts": {},
+      "diligence": {
+        "commercial": "not_started",
+        "product_technical": "not_started",
+        "finance_legal": "not_started",
+        "memo": "not_started"
+      }
+    },
+    {
+      "slug": "acmeai-2",
+      "company_name": "Acmeai",
+      "status": "active",
+      "stage": "sourced",
+      "owner": "fund",
+      "source": "auto_email_scanner",
+      "sector": "",
+      "round": "",
+      "raise_usd": 0,
+      "valuation_cap_usd": 0,
+      "decision_posture": "pending_review",
+      "priority": "medium",
+      "last_touch": "2026-03-11",
+      "next_action": "Review auto-created deal entry and complete details",
+      "next_action_owner": "fund",
+      "next_action_due": "",
+      "thesis": "",
+      "open_questions": [
+        "Auto-created from email \u2014 needs review"
+      ],
+      "assumptions": [],
+      "artifacts": {},
+      "diligence": {
+        "commercial": "not_started",
+        "product_technical": "not_started",
+        "finance_legal": "not_started",
+        "memo": "not_started"
+      }
+    }
+  ]
+}

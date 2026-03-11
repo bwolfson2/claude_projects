@@ -1,0 +1,4 @@
+interface:
+  display_name: "Fund Dealflow"
+  short_description: "Track companies, diligence, and next steps"
+  default_prompt: "Use $fund-dealflow-orchestrator to update the fund CRM, company workspace, and diligence next actions."

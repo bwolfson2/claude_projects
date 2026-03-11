@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dataroom Intake"
+  short_description: "Inventory and stage dataroom folders"
+  default_prompt: "Use $dataroom-intake to inventory this startup dataroom and stage the review workspace."

@@ -1,0 +1,36 @@
+[2026-03-10 07:28:58] INFO: === Starting JSON → Excel sync ===
+[2026-03-10 07:28:58] INFO: Loaded Excel workbook: /sessions/vigilant-dazzling-franklin/mnt/due_diligences/fund/VFT-Master-Tracker.xlsx
+[2026-03-10 07:28:58] INFO: Loaded JSON file: /sessions/vigilant-dazzling-franklin/mnt/due_diligences/fund/crm/deals.json
+[2026-03-10 07:28:58] INFO: Loaded JSON file: /sessions/vigilant-dazzling-franklin/mnt/due_diligences/projects/projects.json
+[2026-03-10 07:28:58] INFO: Found 1 companies to sync
+[2026-03-10 07:28:58] INFO: Synced 1 companies to DD Pipeline tab
+[2026-03-10 07:28:58] INFO: Found 0 projects to sync
+[2026-03-10 07:28:58] INFO: Synced 0 projects to Project Management tab
+[2026-03-10 07:28:58] INFO: Saved Excel workbook: /sessions/vigilant-dazzling-franklin/mnt/due_diligences/fund/VFT-Master-Tracker.xlsx
+[2026-03-10 07:28:58] INFO: === Sync completed successfully ===
+[2026-03-10 07:29:08] INFO: === Starting Excel → JSON sync (DRY RUN) ===
+[2026-03-10 07:29:08] INFO: Loaded Excel workbook: /sessions/vigilant-dazzling-franklin/mnt/due_diligences/fund/VFT-Master-Tracker.xlsx
+[2026-03-10 07:29:08] INFO: Loaded JSON: /sessions/vigilant-dazzling-franklin/mnt/due_diligences/fund/crm/deals.json
+[2026-03-10 07:29:08] INFO: No changes detected in deals.json
+[2026-03-10 07:29:08] INFO: No project data found in spreadsheet
+[2026-03-10 07:29:08] INFO: === Sync completed (DRY RUN) ===
+[2026-03-10 07:30:49] INFO: === Starting JSON → Excel sync ===
+[2026-03-10 07:30:49] INFO: Loaded Excel workbook: /sessions/vigilant-dazzling-franklin/mnt/due_diligences/fund/VFT-Master-Tracker.xlsx
+[2026-03-10 07:30:49] INFO: Loaded JSON file: /sessions/vigilant-dazzling-franklin/mnt/due_diligences/fund/crm/deals.json
+[2026-03-10 07:30:49] INFO: Loaded JSON file: /sessions/vigilant-dazzling-franklin/mnt/due_diligences/projects/projects.json
+[2026-03-10 07:30:49] INFO: Found 1 companies to sync
+[2026-03-10 07:30:49] INFO: Synced 1 companies to DD Pipeline tab
+[2026-03-10 07:30:49] INFO: Found 0 projects to sync
+[2026-03-10 07:30:49] INFO: Synced 0 projects to Project Management tab
+[2026-03-10 07:30:49] INFO: Saved Excel workbook: /sessions/vigilant-dazzling-franklin/mnt/due_diligences/fund/VFT-Master-Tracker.xlsx
+[2026-03-10 07:30:49] INFO: === Sync completed successfully ===
+[2026-03-10 13:30:20] INFO: === Starting JSON → Excel sync ===
+[2026-03-10 13:30:20] INFO: Loaded Excel workbook: /sessions/vigilant-dazzling-franklin/mnt/due_diligences/fund/VFT-Master-Tracker.xlsx
+[2026-03-10 13:30:20] INFO: Loaded JSON file: /sessions/vigilant-dazzling-franklin/mnt/due_diligences/fund/crm/deals.json
+[2026-03-10 13:30:20] INFO: Loaded JSON file: /sessions/vigilant-dazzling-franklin/mnt/due_diligences/projects/projects.json
+[2026-03-10 13:30:20] INFO: Found 2 companies to sync
+[2026-03-10 13:30:20] INFO: Synced 2 companies to DD Pipeline tab
+[2026-03-10 13:30:20] INFO: Found 1 projects to sync
+[2026-03-10 13:30:20] INFO: Synced 1 projects to Project Management tab
+[2026-03-10 13:30:20] INFO: Saved Excel workbook: /sessions/vigilant-dazzling-franklin/mnt/due_diligences/fund/VFT-Master-Tracker.xlsx
+[2026-03-10 13:30:20] INFO: === Sync completed successfully ===

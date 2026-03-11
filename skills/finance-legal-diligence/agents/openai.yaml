@@ -1,0 +1,4 @@
+interface:
+  display_name: "Finance Legal Diligence"
+  short_description: "Assess financial and legal risk"
+  default_prompt: "Use $finance-legal-diligence to review financial quality, legal exposure, and diligence gaps."

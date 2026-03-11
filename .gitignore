@@ -1,0 +1,42 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Databases (contain extracted content from sensitive docs)
+*.db
+fund/metadata/db/
+fund/metadata/test*.db
+fund/metadata/ingestion.db
+
+# Dataroom files (sensitive legal/financial documents)
+fund/datarooms/
+
+# Inbox emails (sensitive communications)
+fund/inbox/
+
+# Transcripts (sensitive meeting notes)
+fund/transcripts/
+
+# Fund tracker (contains deal data)
+fund/VFT-Master-Tracker.xlsx
+fund/.~lock.*
+
+# Review memos (contain sensitive analysis)
+review/
+
+# Claude worktrees
+.claude/worktrees/
+
+# Claude plans
+.claude/plans/
+
+# Google Drive temp
+.tmp.driveupload/
+
+# Environment
+.env
+*.key

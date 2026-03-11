@@ -1,0 +1,4 @@
+interface:
+  display_name: "Diligence Memo Writer"
+  short_description: "Convert findings into an IC memo"
+  default_prompt: "Use $diligence-memo-writer to turn diligence findings into an investment committee memo and question list."

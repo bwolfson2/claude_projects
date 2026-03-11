@@ -1,0 +1,76 @@
+{
+  "projects": [
+    {
+      "id": "proj_001",
+      "name": "Legal Documentation Review",
+      "category": "Legal/Corp",
+      "status": "in_progress",
+      "priority": "High",
+      "owner": "legal_team",
+      "start_date": "2026-03-01",
+      "target_date": "2026-03-31",
+      "description": "Review and standardize legal documentation across all portfolio companies. Includes founder agreements, equity plans, and investment documents.",
+      "next_action": "Draft template package for founder agreements",
+      "next_action_owner": "jane_smith",
+      "next_action_due": "2026-03-15",
+      "artifacts": {
+        "template_doc": "https://docs.google.com/document/d/...",
+        "review_checklist": "https://docs.google.com/spreadsheets/d/..."
+      },
+      "notes": "In coordination with Finance team. Blockers: waiting on counsel review of SAFE template variants."
+    },
+    {
+      "id": "proj_002",
+      "name": "Portfolio Metrics Dashboard",
+      "category": "Data/Analytics",
+      "status": "in_progress",
+      "priority": "High",
+      "owner": "data_team",
+      "start_date": "2026-02-15",
+      "target_date": "2026-04-15",
+      "description": "Build a centralized dashboard for tracking portfolio company KPIs: ARR growth, burn rate, runway, hiring velocity, customer concentration.",
+      "next_action": "Complete data connectors for Stripe and ChartMogul",
+      "next_action_owner": "alex_k",
+      "next_action_due": "2026-03-20",
+      "artifacts": {
+        "design_doc": "https://docs.google.com/document/d/...",
+        "figma_mockup": "https://www.figma.com/file/..."
+      },
+      "notes": "Planning to use Metabase or Looker. Need infra team input on data pipeline architecture."
+    },
+    {
+      "id": "proj_003",
+      "name": "Founder Advisory Board Setup",
+      "category": "Operations",
+      "status": "not_started",
+      "priority": "Medium",
+      "owner": null,
+      "start_date": "2026-04-01",
+      "target_date": "2026-05-31",
+      "description": "Establish quarterly founder advisory board meetings. Select 4-6 founders from portfolio who can provide strategic input on fund thesis, company selection, and value-add programs.",
+      "next_action": "Identify candidate founders and send initial outreach",
+      "next_action_owner": "founder_relations",
+      "next_action_due": "2026-03-25",
+      "artifacts": {},
+      "notes": "Goal is to have first meeting in Q2. Consider both early winners and interesting stage-shift companies."
+    },
+    {
+      "id": "proj_004",
+      "name": "Customer Reference Program",
+      "category": "Product",
+      "status": "on_hold",
+      "priority": "Medium",
+      "owner": "product_team",
+      "start_date": "2026-01-15",
+      "target_date": "2026-06-30",
+      "description": "Create a managed program for collecting and sharing customer success stories from portfolio companies. Build template case studies, video testimonials, and success metrics.",
+      "next_action": "Resume work after legal review completes",
+      "next_action_owner": "product_team",
+      "next_action_due": "2026-04-01",
+      "artifacts": {
+        "template_case_study": "https://docs.google.com/document/d/..."
+      },
+      "notes": "On hold pending legal review of customer consent and IP ownership requirements."
+    }
+  ]
+}

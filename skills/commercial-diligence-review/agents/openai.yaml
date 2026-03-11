@@ -1,0 +1,4 @@
+interface:
+  display_name: "Commercial Diligence Review"
+  short_description: "Assess market, GTM, and traction"
+  default_prompt: "Use $commercial-diligence-review to assess market, customer, and go-to-market risk from this dataroom."
