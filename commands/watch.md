@@ -25,8 +25,8 @@ Set up these scheduled tasks using Claude Code's scheduled task system:
 | `vft-whatsapp-scan` | Every 4h weekdays (9,13,17,21) | Scan WhatsApp groups → classify → apply |
 | `vft-signal-scan` | Every 4h weekdays (9,13,17,21) | Scan Signal messages → classify → apply |
 | `vft-transcript-ingest` | Daily at 9am weekdays | Pull Granola transcripts → classify → apply |
-| `vft-full-classify` | Every 2h weekdays (8,10,12,14,16,18,20) | Classify unprocessed items → route → apply |
-| `vft-monitor-sweep` | Daily at 8am weekdays | Full /monitor sweep with reactive routing |
+| `vft-full-classify` | Every 2h weekdays (8,10,12,14,16,18,20) | Classify + route unprocessed items via RLM reasoning |
+| `vft-monitor-sweep` | Daily at 8am weekdays | Full /monitor sweep with RLM classification + routing |
 
 ### Creating Scheduled Tasks
 
@@ -35,17 +35,17 @@ For each task, use the scheduled tasks system:
 **Email scanning (every 4 hours, weekdays):**
 - Task ID: `vft-email-scan`
 - Cron: `0 9,13,17,21 * * 1-5`
-- Prompt: "Run /vft-fund-tools:scan-comms with email scanner only. Scan Outlook inbox for new messages, classify them, and apply updates to deals and projects."
+- Prompt: "Run /vft-fund-tools:scan-comms with email scanner only. Scan Outlook inbox for new messages, then classify using RLM: run `classify_messages.py context`, `classify_messages.py pending --source outlook`, reason about each message, store classifications with `classify_messages.py batch-classify`, and apply updates."
 
 **Slack scanning (every 2 hours, weekdays):**
 - Task ID: `vft-slack-scan`
 - Cron: `0 9,11,13,15,17,19 * * 1-5`
-- Prompt: "Run /vft-fund-tools:scan-comms with Slack scanner only. Scan workspace channels and DMs, classify, and apply updates."
+- Prompt: "Run /vft-fund-tools:scan-comms with Slack scanner only. Scan workspace channels and DMs, then classify using RLM: run `classify_messages.py context`, `classify_messages.py pending --source slack`, reason about each message, store classifications, and apply updates."
 
 **Full monitor sweep (daily 8am):**
 - Task ID: `vft-monitor-sweep`
 - Cron: `0 8 * * 1-5`
-- Prompt: "Run /vft-fund-tools:monitor to do a full scan of all channels, classify everything, run reactive routing, and produce a morning briefing report."
+- Prompt: "Run /vft-fund-tools:monitor to do a full scan of all channels, classify everything using RLM reasoning (classify_messages.py context/pending/batch-classify), route using RLM (route_messages.py pending/batch-route), execute high-priority actions, and produce a morning briefing report."
 
 ### Managing Schedules
 

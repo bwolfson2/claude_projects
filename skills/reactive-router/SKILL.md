@@ -1,11 +1,11 @@
 ---
 name: reactive-router
-description: Analyze classified messages and determine what reactive actions to take — dataroom processing, meeting prep, deal creation, urgent flagging, and action item extraction. Auto-invoked after message classification to close the loop between incoming data and fund workflows.
+description: Analyze classified messages and determine what reactive actions to take — dataroom processing, meeting prep, deal creation, urgent flagging, and action item extraction. Uses RLM subcommands driven by Claude's reasoning. Auto-invoked after message classification to close the loop between incoming data and fund workflows.
 ---
 
 # Reactive Router
 
-The intelligence layer between message classification and fund workflow execution. After messages are classified to deals/projects, the reactive router determines what *actions* should be taken based on message content, attachments, and context.
+The intelligence layer between message classification and fund workflow execution. After messages are classified to deals/projects, Claude reads them and decides what *actions* should be taken — using its own reasoning, not pattern matching.
 
 ## When to Use
 
@@ -13,75 +13,109 @@ The intelligence layer between message classification and fund workflow executio
 - When new messages have been classified but not yet acted upon
 - When you need to determine the appropriate workflow response to incoming data
 
-## How It Works
+## RLM Workflow
 
-```
-Classified Messages (ingestion.db)
-    ↓
-route_messages.py (pattern matching on keywords, attachments, metadata)
-    ↓
-Action Plan (JSON: message_id, route, action, priority)
-    ↓
-Execute: dataroom-intake / deal creation / meeting prep / urgent flag / action extraction
-    ↓
-Mark as routed (routed_at timestamp in messages table)
-```
-
-## Routing Rules
-
-| Route | Detection Patterns | Priority | Action |
-|-------|-------------------|----------|--------|
-| `dataroom` | Attachments + "dataroom", "data room", "diligence materials", "documents attached" | HIGH | Run dataroom-intake → document-processor |
-| `term_sheet` | "term sheet", "SAFE", "side letter", "convertible note" | URGENT | Flag, update deal stage, save to diligence/ |
-| `meeting` | "schedule", "meeting", "call", "sync", "calendar invite", .ics | MEDIUM | Create meeting prep, update last_touch |
-| `intro` | "intro", "introducing", "connect you with", "meet" + new domain | MEDIUM | Create deal, web research, workspace |
-| `funding` | "raised", "funding", "series", "round", "closed" | LOW | Update deal record |
-| `action_items` | Commitment language, deadlines, "will send", "by Friday" | LOW | Extract → append to next-actions.md |
-| `follow_up` | Reply to existing classified thread | LOW | Update last_touch, check for new info |
-
-## Running the Router
+### Step 1: Get Pending Messages
 
 ```bash
-# Route all unrouted classified messages
-python skills/reactive-router/scripts/route_messages.py
-
-# Dry run — show what would be routed without marking
-python skills/reactive-router/scripts/route_messages.py --dry-run
-
-# Route messages for a specific deal/project only
-python skills/reactive-router/scripts/route_messages.py --project midbound
+python skills/reactive-router/scripts/route_messages.py pending
 ```
 
-## Output Format
+Returns classified-but-unrouted messages with their classification context (matched slug, match type, confidence, body preview, attachments).
 
-The router outputs a JSON action plan:
+Use `--project midbound` to filter to a specific deal/project.
 
-```json
-[
-  {
-    "message_id": 42,
-    "source": "outlook",
-    "sender": "founder@startup.com",
-    "subject": "Dataroom shared",
-    "route": "dataroom",
-    "priority": "HIGH",
-    "matched_project": "midbound",
-    "actions": [
-      "download_attachments",
-      "run_dataroom_intake",
-      "run_document_processor",
-      "update_deal_stage:dataroom_received"
-    ],
-    "reason": "Attachment detected + keyword 'dataroom' in subject"
-  }
-]
+### Step 2: Review Available Routes
+
+```bash
+python skills/reactive-router/scripts/route_messages.py routes
 ```
 
-Claude Code then executes each action in the plan, confirming with the user for HIGH/URGENT items.
+Returns the available route types as reference:
+
+| Route | Priority | When to use |
+|-------|----------|-------------|
+| `term_sheet` | URGENT | Term sheet, SAFE, convertible note, legal investment document |
+| `dataroom` | HIGH | Dataroom shared, diligence materials, document batch |
+| `meeting` | MEDIUM | Meeting request, calendar invite, scheduling |
+| `intro` | MEDIUM | New introduction to a founder or company |
+| `funding` | LOW | Funding announcement, round closure |
+| `action_items` | LOW | Action items, commitments, deadlines |
+| `follow_up` | LOW | Thread continuation with new information |
+
+### Step 3: Reason About Each Message
+
+Read the subject, body preview, attachments, and classification for each pending message. Decide:
+- What action should the fund take?
+- Is this a dataroom drop? A term sheet? A meeting request? An intro?
+- What priority level? (URGENT items get surfaced to the user immediately)
+- If multiple routes could apply, pick the highest priority one
+
+### Step 4: Store Decisions
+
+**For individual routes:**
+```bash
+python skills/reactive-router/scripts/route_messages.py route \
+  --message-id 42 --route dataroom --priority HIGH \
+  --actions '["download_attachments", "run_dataroom_intake", "run_document_processor"]' \
+  --reasoning "Zip attachment with diligence materials for Midbound"
+```
+
+**For batches:**
+```bash
+python skills/reactive-router/scripts/route_messages.py batch-route --decisions '[
+  {"message_id": 42, "route": "dataroom", "priority": "HIGH", "actions": ["download_attachments", "run_dataroom_intake"]},
+  {"message_id": 43, "route": "meeting", "priority": "MEDIUM", "actions": ["create_meeting_prep"]}
+]'
+```
+
+**For messages that need no action:**
+```bash
+python skills/reactive-router/scripts/route_messages.py mark-routed --message-ids 44,45,46
+```
+
+### Step 5: Execute Action Plan
+
+After routing, execute each action. For URGENT/HIGH priority items, confirm with the user before proceeding.
+
+**Dataroom received:**
+1. Download attachments to `fund/datarooms/{company}_dataroom/`
+2. Run `python skills/dataroom-intake/scripts/build_manifest.py`
+3. Run `python skills/document-processor/scripts/extract_text.py`
+4. Update deal stage
+
+**Term sheet received:**
+1. Flag as URGENT — present to user immediately
+2. Save to `fund/companies/{slug}/diligence/`
+3. Update deal stage to "term_sheet"
+4. Suggest running finance-legal-diligence review
+
+**Meeting request:**
+1. Create meeting prep note
+2. Update last_touch on the deal
+
+**New introduction:**
+1. Create deal entry via `classify_messages.py auto-create`
+2. Run web research on the company
+3. Create workspace
+
+**Action items detected:**
+1. Extract action items using action-extractor
+2. Append to relevant `next-actions.md`
+
+## Subcommand Reference
+
+| Subcommand | Purpose |
+|------------|---------|
+| `pending` | List classified-but-unrouted messages |
+| `routes` | Show available route types (reference) |
+| `route` | Store one routing decision |
+| `batch-route` | Store multiple decisions + output action plan |
+| `mark-routed` | Mark messages as needing no action |
 
 ## Integration
 
-The reactive router is called automatically by:
+The reactive router is called by:
 - `/vft-fund-tools:monitor` (Phase 2)
 - `vft-monitor-sweep` scheduled task (daily 8am)
 - Manually via `/vft-fund-tools:scan-comms` when reactive routing is desired

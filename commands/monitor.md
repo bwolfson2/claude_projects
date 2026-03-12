@@ -20,15 +20,24 @@ python skills/comms-hub/scripts/run_pipeline.py
 
 This dispatches: Outlook → Slack → WhatsApp → Signal → Granola transcripts, then classifies and applies updates.
 
-### Phase 2: Reactive Routing
+### Phase 2: Classify & Route (RLM)
 
-After scanning, run the reactive router to determine what actions to take:
+After scanning, classify and route messages using conversational reasoning via RLM subcommands:
 
-```bash
-python skills/reactive-router/scripts/route_messages.py
-```
+**Classify unprocessed messages:**
+1. Load context: `python skills/deal-project-classifier/scripts/classify_messages.py context`
+2. Get pending: `python skills/deal-project-classifier/scripts/classify_messages.py pending`
+3. For each message, reason about which deal/project it belongs to (consider sender domain, known contacts, subject, attachments, recent activity). Batch obvious matches together.
+4. Store decisions: `python skills/deal-project-classifier/scripts/classify_messages.py batch-classify --decisions '[...]'`
+5. Create new deals/projects for unmatched items: `python skills/deal-project-classifier/scripts/classify_messages.py auto-create --type deal --name "X"`
+6. Apply updates: `python skills/deal-project-classifier/scripts/apply_updates.py`
 
-This outputs a JSON action plan for each unrouted message. Review the plan and execute.
+**Route classified messages:**
+1. Get pending: `python skills/reactive-router/scripts/route_messages.py pending`
+2. Review routes: `python skills/reactive-router/scripts/route_messages.py routes`
+3. For each message, decide what action the fund should take (dataroom processing, meeting prep, term sheet flag, intro handling, etc.)
+4. Store decisions: `python skills/reactive-router/scripts/route_messages.py batch-route --decisions '[...]'`
+5. Mark no-action messages: `python skills/reactive-router/scripts/route_messages.py mark-routed --message-ids ...`
 
 ### Phase 3: Execute Reactive Actions
 
