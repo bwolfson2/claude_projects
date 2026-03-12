@@ -16,6 +16,7 @@ Plugins are **tool-agnostic** — they describe workflows in terms of categories
 | File storage | `~~file storage` | Google Drive (built-in connector) | OneDrive (via ms365), Dropbox, Box |
 | Knowledge base | `~~knowledge base` | Notion | Confluence, Guru |
 | Meeting transcription | `~~transcripts` | Granola | Fireflies, Gong, Otter.ai |
+| Messaging | `~~messaging` | WhatsApp (community MCP), Signal (community MCP) | — |
 
 ## MCP Servers (in .mcp.json)
 
@@ -29,6 +30,30 @@ These are pre-configured in the plugin and will prompt for OAuth connection when
 | **slack** | `mcp.slack.com/mcp` | Slack channels, DMs, threads |
 | **notion** | `mcp.notion.com/mcp` | Notion pages and databases |
 | **granola** | `mcp.granola.ai/mcp` | Meeting transcripts and notes |
+
+## Community MCP Servers (self-hosted, in .mcp.json)
+
+These require local installation. The plugin pre-configures them but they won't connect until installed:
+
+| Server | Type | Install | What it provides |
+|--------|------|---------|-----------------|
+| **whatsapp** | stdio | `go install github.com/lharries/whatsapp-mcp@latest` | WhatsApp messages, contacts, groups. Pairs with QR code on first run. |
+| **signal** | stdio | See [rymurr/signal-mcp](https://github.com/rymurr/signal-mcp) | Signal messages and groups. Requires `signal-cli` configured locally. |
+
+### WhatsApp Setup
+
+1. Install Go if you don't have it: `brew install go`
+2. Install the MCP: `go install github.com/lharries/whatsapp-mcp@latest`
+3. On first run, scan a QR code with WhatsApp on your phone to link
+4. Messages are stored locally in SQLite — only sent to Claude when accessed via tools
+
+### Signal Setup
+
+1. Install and configure [signal-cli](https://github.com/AsamK/signal-cli) with your phone number
+2. Install the Signal MCP server: see [rymurr/signal-mcp](https://github.com/rymurr/signal-mcp)
+3. The MCP connects to your local signal-cli instance
+
+> **Fallback:** Both WhatsApp and Signal skills also work via Chrome automation (Claude in Chrome scanning WhatsApp Web / Signal Desktop) without any MCP server. The MCP is faster and runs headless.
 
 ## Built-in Cowork Connectors
 

@@ -23,6 +23,18 @@
     "granola": {
       "type": "http",
       "url": "https://mcp.granola.ai/mcp"
+    },
+    "whatsapp": {
+      "type": "stdio",
+      "command": "whatsapp-mcp",
+      "args": [],
+      "note": "Community MCP: github.com/lharries/whatsapp-mcp — install with: go install github.com/lharries/whatsapp-mcp@latest"
+    },
+    "signal": {
+      "type": "stdio",
+      "command": "signal-mcp-server",
+      "args": [],
+      "note": "Community MCP: github.com/rymurr/signal-mcp — requires signal-cli configured locally"
     }
   }
 }
