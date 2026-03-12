@@ -1,17 +1,22 @@
 ---
 name: whatsapp-scanner
-description: Scan WhatsApp Web via Claude in Chrome, extract messages from configured groups and contacts, save to structured folders, and index in the unified messages table. Use when you need to pull recent WhatsApp messages into the local diligence system for classification.
+description: Scan WhatsApp Web via WhatsApp MCP connector (or Claude in Chrome fallback), extract messages from configured groups and contacts, save to structured folders, and index in the unified messages table. Use when you need to pull recent WhatsApp messages into the local diligence system for classification.
 ---
 
 # VFT WhatsApp Scanner
 
-Scan WhatsApp Web (https://web.whatsapp.com/) using Claude in Chrome browser automation. Extract messages from configured groups and contacts, save to `fund/inbox/whatsapp/{YYYY-MM}/{contact-or-group-slug}/`, and index metadata in the SQLite ingestion database (unified `messages` table).
+Scan WhatsApp using a WhatsApp MCP connector (preferred) or Claude in Chrome browser automation (fallback). Extract messages from configured groups and contacts, save to `fund/inbox/whatsapp/{YYYY-MM}/{contact-or-group-slug}/`, and index metadata in the SQLite ingestion database (unified `messages` table).
 
 ## Prerequisites
 
-- Claude in Chrome extension must be connected
+- Claude in Chrome extension must be connected (for browser fallback)
 - WhatsApp Web must be accessible at https://web.whatsapp.com/ with an active session (QR code already scanned)
 - The ingestion database must exist (`fund/metadata/db/ingestion.db` — run `fund/metadata/init_db.py` if needed)
+
+## Connector Strategy
+
+1. **Preferred: WhatsApp MCP connector** — If a WhatsApp MCP server is available (e.g., community `lharries/whatsapp-mcp`), use it to list chats, read messages, and search conversations. This is faster and more reliable than browser automation.
+2. **Fallback: Claude in Chrome** — If no WhatsApp MCP connector is available, use browser automation to navigate to `https://web.whatsapp.com/` and interact with the WhatsApp web UI directly.
 
 ## Configured Targets
 
@@ -19,9 +24,10 @@ The scan targets (groups and contacts) are defined in the `SCAN_TARGETS` dict in
 
 ## Core Workflow
 
-1. **Navigate** to WhatsApp Web via Claude in Chrome
-2. **Verify** the session is active (not showing QR code screen)
-3. **For each configured group/contact:**
+1. **Check connector availability** — Search for a WhatsApp MCP connector. If available, use MCP tools. Otherwise, fall back to Claude in Chrome.
+2. **Navigate** to WhatsApp Web via Claude in Chrome (if using browser fallback)
+3. **Verify** the session is active (not showing QR code screen)
+4. **For each configured group/contact:**
    - Search for and open the chat
    - Extract messages within the lookback window (default: last 4 hours for cron, configurable for manual runs)
 4. **For each message:**
@@ -33,7 +39,7 @@ The scan targets (groups and contacts) are defined in the `SCAN_TARGETS` dict in
 6. **Skip** messages already in the database (dedup on composite source_id)
 7. After scanning, trigger the `deal-project-classifier` skill to classify new messages
 
-## WhatsApp Web Interaction Patterns
+## WhatsApp Web Interaction Patterns (Browser Fallback)
 
 ### Verifying Active Session
 - Navigate to `https://web.whatsapp.com/`
@@ -140,6 +146,7 @@ The cron invokes this skill with `--lookback-hours 4 --max-messages 200`.
 ## Error Handling
 
 - If WhatsApp Web requires QR code re-authentication, stop and notify the user
+- If the WhatsApp MCP connector is unavailable, fall back to browser automation
 - If a chat cannot be found in the search results, log a warning and skip to the next target
 - If no new messages are found in a chat, continue silently (no errors, no phantom entries)
 - If the database is locked, retry up to 3 times with 2-second backoff

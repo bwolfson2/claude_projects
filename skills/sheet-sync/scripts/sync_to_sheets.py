@@ -28,8 +28,8 @@ REPO_ROOT = Path(os.environ.get("VFT_REPO_ROOT",
     Path(__file__).resolve().parents[3]))
 CONFIG_PATH = REPO_ROOT / "fund" / "metadata" / "config.json"
 
-DEALS_JSON = REPO_ROOT / "fund" / "deals.json"
-PROJECTS_JSON = REPO_ROOT / "fund" / "projects.json"
+DEALS_JSON = REPO_ROOT / "fund" / "crm" / "deals.json"
+PROJECTS_JSON = REPO_ROOT / "projects" / "projects.json"
 CONTACTS_JSON = REPO_ROOT / "fund" / "crm" / "contacts.json"
 
 # Diligence status display mapping
@@ -99,7 +99,8 @@ def sync_deals(sh: gspread.Spreadsheet):
         print("  deals.json not found — skipping")
         return 0
 
-    deals = json.loads(DEALS_JSON.read_text())
+    raw = json.loads(DEALS_JSON.read_text())
+    deals = raw.get("companies", raw) if isinstance(raw, dict) else raw
     if not deals:
         print("  No deals to sync")
         return 0
@@ -158,7 +159,8 @@ def sync_projects(sh: gspread.Spreadsheet):
         print("  projects.json not found — skipping")
         return 0
 
-    projects = json.loads(PROJECTS_JSON.read_text())
+    raw = json.loads(PROJECTS_JSON.read_text())
+    projects = raw.get("projects", raw) if isinstance(raw, dict) else raw
     if not projects:
         print("  No projects to sync")
         return 0

@@ -20,11 +20,12 @@ The master orchestrator for the VFT project management system. Coordinates all s
 When triggered with "Check my messages" or "Update everything":
 
 1. **Dispatch scanners** (in parallel where possible):
-   - `email-scanner` — Scan Outlook inbox via Chrome
+   - `email-scanner` — Scan Outlook inbox (ms365 MCP or Chrome fallback)
    - `slack-scanner` — Scan Slack channels (connector first, Chrome fallback)
-   - `whatsapp-scanner` — Scan WhatsApp Web via Chrome
+   - `whatsapp-scanner` — Scan WhatsApp (MCP or Chrome fallback)
    - `signal-scanner` — Scan Signal (signal-cli or Chrome)
    - `transcript-ingestion` — Pull new Granola transcripts
+   - `calendar-scanner` — Scan calendar events (Google Calendar or Outlook Calendar MCP, else Chrome)
 
 2. **Classify new messages**:
    - Run `deal-project-classifier` on all unclassified messages
@@ -52,7 +53,7 @@ When triggered with "What's new on [project]?":
 ## Scripts
 
 - `scripts/run_pipeline.py`
-  - `--scanners all|outlook|slack|whatsapp|signal|granola` — Which scanners to run
+  - `--scanners all|outlook|slack|whatsapp|signal|granola|calendar` — Which scanners to run
   - `--classify` — Run classifier after scanning (default: true)
   - `--dashboard` — Render dashboard after classification (default: true)
   - `--dry-run` — Preview without changes
@@ -62,10 +63,13 @@ When triggered with "What's new on [project]?":
 
 Scanners are dispatched in this order (connector-first, Chrome fallback):
 1. Granola transcripts (MCP connector — fastest, no browser needed)
-2. Outlook emails (Chrome automation)
+2. Outlook emails (ms365 MCP or Chrome)
 3. Slack messages (connector if available, else Chrome)
-4. WhatsApp messages (Chrome only)
+4. WhatsApp messages (MCP or Chrome)
 5. Signal messages (signal-cli if available, else Chrome)
+6. Calendar events (Google Calendar or Outlook Calendar MCP, else Chrome)
+
+If `fund/metadata/config.json` exists, only enabled channels are dispatched.
 
 If a scanner fails, log the error and continue with the next. Never let one scanner failure block the pipeline.
 

@@ -29,8 +29,8 @@ REPO_ROOT = Path(os.environ.get("VFT_REPO_ROOT",
 CONFIG_PATH = REPO_ROOT / "fund" / "metadata" / "config.json"
 DB_PATH = REPO_ROOT / "fund" / "metadata" / "db" / "ingestion.db"
 
-DEALS_JSON = REPO_ROOT / "fund" / "deals.json"
-PROJECTS_JSON = REPO_ROOT / "fund" / "projects.json"
+DEALS_JSON = REPO_ROOT / "fund" / "crm" / "deals.json"
+PROJECTS_JSON = REPO_ROOT / "projects" / "projects.json"
 CONTACTS_JSON = REPO_ROOT / "fund" / "crm" / "contacts.json"
 
 DD_STATUS_MAP = {
@@ -285,7 +285,8 @@ def update_deal_tabs(sh: gspread.Spreadsheet):
         print("  deals.json not found — skipping deal tabs")
         return 0
 
-    deals = json.loads(DEALS_JSON.read_text())
+    raw = json.loads(DEALS_JSON.read_text())
+    deals = raw.get("companies", raw) if isinstance(raw, dict) else raw
     count = 0
 
     for deal in deals:
@@ -309,7 +310,8 @@ def update_project_tabs(sh: gspread.Spreadsheet):
         print("  projects.json not found — skipping project tabs")
         return 0
 
-    projects = json.loads(PROJECTS_JSON.read_text())
+    raw = json.loads(PROJECTS_JSON.read_text())
+    projects = raw.get("projects", raw) if isinstance(raw, dict) else raw
     count = 0
 
     for project in projects:

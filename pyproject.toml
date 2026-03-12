@@ -12,4 +12,6 @@ pythonpath = [
     "skills/fund-dealflow-orchestrator/scripts",
     "skills/message-ingestion/scripts",
     "skills/project-management/scripts",
+    "skills/calendar-scanner/scripts",
+    "skills/project-init/scripts",
 ]

@@ -1,21 +1,27 @@
 ---
 name: email-scanner
-description: Scan VFT Outlook inbox via Claude in Chrome, extract emails and attachments, save to structured folders, and index in the ingestion database. Use when you need to pull recent emails into the local diligence system for classification.
+description: Scan VFT Outlook inbox via Microsoft 365 MCP connector (or Claude in Chrome fallback), extract emails and attachments, save to structured folders, and index in the ingestion database. Use when you need to pull recent emails into the local diligence system for classification.
 ---
 
 # VFT Email Scanner
 
-Scan the VFT Outlook inbox (https://outlook.cloud.microsoft/mail/) using Claude in Chrome browser automation. Extract emails, download attachments, save everything to `fund/inbox/{YYYY-MM}/{subject-slug}/`, and index metadata in the SQLite ingestion database.
+Scan the VFT Outlook inbox using a Microsoft 365 MCP connector (preferred) or Claude in Chrome browser automation (fallback). Extract emails, download attachments, save everything to `fund/inbox/{YYYY-MM}/{subject-slug}/`, and index metadata in the SQLite ingestion database.
 
 ## Prerequisites
 
-- Claude in Chrome extension must be connected
+- Claude in Chrome extension must be connected (for browser fallback)
 - Outlook must be accessible at https://outlook.cloud.microsoft/mail/ on the bw@vft.institute account
 - The ingestion database must exist (`fund/metadata/db/ingestion.db` — run `fund/metadata/init_db.py` if needed)
 
+## Connector Strategy
+
+1. **Preferred: Microsoft 365 MCP connector** — If an ms365 or Outlook MCP connector is available, use it to search emails, read message bodies, and download attachments. This is faster and more reliable than browser automation.
+2. **Fallback: Claude in Chrome** — If no Microsoft 365 MCP connector is available, use browser automation to navigate to `https://outlook.cloud.microsoft/mail/` and interact with the Outlook web UI directly.
+
 ## Core Workflow
 
-1. **Navigate** to Outlook Web via Claude in Chrome
+1. **Check connector availability** — Search for a Microsoft 365 / Outlook MCP connector. If available, use MCP tools. Otherwise, fall back to Claude in Chrome.
+2. **Navigate** to Outlook Web via Claude in Chrome (if using browser fallback)
 2. **Scan** inbox for emails within the configured lookback window (default: last 4 hours for cron, configurable for manual runs)
 3. **For each email:**
    - Extract: sender, recipients, subject, date, body text
@@ -27,7 +33,7 @@ Scan the VFT Outlook inbox (https://outlook.cloud.microsoft/mail/) using Claude 
 5. **Skip** emails already in the database (dedup on outlook_id or subject+sender+date composite)
 6. After scanning, trigger the `deal-project-classifier` skill to classify new emails
 
-## Outlook Web Interaction Patterns
+## Outlook Web Interaction Patterns (Browser Fallback)
 
 ### Reading the Inbox
 - Navigate to `https://outlook.cloud.microsoft/mail/`
@@ -116,5 +122,6 @@ The cron invokes this skill with `--lookback-hours 4 --max-emails 50`.
 ## Error Handling
 
 - If Outlook requires re-authentication, stop and notify the user
+- If the Microsoft 365 MCP connector is unavailable, fall back to browser automation
 - If an attachment fails to download, log the error and continue with the next email
 - If the database is locked, retry up to 3 times with 2-second backoff

@@ -30,15 +30,41 @@ REPO_ROOT = Path(__file__).resolve().parents[3]  # skills/whatsapp-scanner/scrip
 DB_PATH = REPO_ROOT / "fund" / "metadata" / "db" / "ingestion.db"
 INBOX_ROOT = REPO_ROOT / "fund" / "inbox" / "whatsapp"
 
+# ── Config ───────────────────────────────────────────────────────────────
+CONFIG_PATH = REPO_ROOT / "fund" / "metadata" / "config.json"
+
 # ── Scan Targets ─────────────────────────────────────────────────────────
 # Add or remove groups and contacts to monitor here.
 # Keys are the display names as they appear in WhatsApp Web.
 # "type" is either "group" or "direct".
-SCAN_TARGETS = {
+# If fund/metadata/config.json exists with whatsapp targets, those are used instead.
+_HARDCODED_TARGETS = {
     # "VFT Deal Flow": {"type": "group"},
     # "Founders Chat": {"type": "group"},
     # "John Doe": {"type": "direct"},
 }
+
+
+def _load_targets_from_config() -> dict:
+    """Load WhatsApp scan targets from config.json if available."""
+    if CONFIG_PATH.exists():
+        try:
+            config = json.loads(CONFIG_PATH.read_text())
+            wa_config = config.get("channels", {}).get("whatsapp", {})
+            if wa_config.get("enabled") and wa_config.get("targets"):
+                targets = {}
+                for name in wa_config["targets"]:
+                    if isinstance(name, dict):
+                        targets[name.get("name", str(name))] = {"type": name.get("type", "group")}
+                    else:
+                        targets[str(name)] = {"type": "group"}
+                return targets
+        except (json.JSONDecodeError, IOError):
+            pass
+    return _HARDCODED_TARGETS
+
+
+SCAN_TARGETS = _load_targets_from_config()
 
 
 def get_db() -> sqlite3.Connection:
@@ -209,25 +235,30 @@ def get_scan_targets() -> dict:
 
 # ── WORKFLOW (for Claude to follow) ──────────────────────────────────────
 """
-CLAUDE IN CHROME WORKFLOW:
+CLAUDE WHATSAPP SCANNING WORKFLOW:
 
-1. NAVIGATE
+1. CHECK CONNECTOR
+   - Search for a WhatsApp MCP connector using mcp-registry search
+   - If available and connected, prefer MCP tools for steps 2-6
+   - If not available, use Claude in Chrome browser automation (steps below)
+
+2. NAVIGATE (browser fallback)
    - Use navigate tool to go to: https://web.whatsapp.com/
    - Use read_page to verify the session is active (chat list visible)
    - If QR code screen is shown, stop and notify the user
 
-2. GET TARGETS
+3. GET TARGETS
    - Call get_scan_targets() to get the configured groups/contacts
    - If no targets are configured, notify the user and stop
 
-3. FOR EACH TARGET:
+4. FOR EACH TARGET:
    a. Use the search bar at the top of the chat list
    b. Type the group/contact name
    c. Use read_page to find the matching result in the search dropdown
    d. Click the result to open the chat
    e. Wait for the chat to load
 
-4. READ MESSAGES
+5. READ MESSAGES
    - Use read_page to get the message list accessibility tree
    - Track date separator elements to build full timestamps
    - For each message within the lookback window:
@@ -237,11 +268,11 @@ CLAUDE IN CHROME WORKFLOW:
      iv.  If new, call save_message() with the extracted data
    - Scroll up to load older messages if still within the lookback window
 
-5. NAVIGATE TO NEXT TARGET
+6. NAVIGATE TO NEXT TARGET
    - Click the back arrow or use the search bar for the next chat
-   - Repeat steps 3-4 for each target
+   - Repeat steps 4-5 for each target
 
-6. FINISH
+7. FINISH
    - Print scan summary (new messages saved, skipped, errors)
    - Trigger deal-project-classifier if new messages were saved
 """

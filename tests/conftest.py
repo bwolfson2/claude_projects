@@ -37,6 +37,8 @@ _SCRIPT_PATHS = [
     REPO_ROOT / "skills" / "fund-dealflow-orchestrator" / "scripts",
     REPO_ROOT / "skills" / "message-ingestion" / "scripts",
     REPO_ROOT / "skills" / "project-management" / "scripts",
+    REPO_ROOT / "skills" / "calendar-scanner" / "scripts",
+    REPO_ROOT / "skills" / "project-init" / "scripts",
 ]
 for p in _SCRIPT_PATHS:
     p_str = str(p)

@@ -129,26 +129,37 @@ def save_email(
     abs_path = str(email_md)
     sender_domain = extract_domain(sender)
 
-    # Insert into DB
-    conn.execute(
-        """INSERT INTO emails
-           (outlook_id, subject, sender, sender_domain, recipients, date,
-            body_preview, folder_saved_to, raw_path, has_attachments, attachment_paths)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-        (
-            outlook_id,
-            subject,
-            sender,
-            sender_domain,
-            recipients,
-            date,
-            body[:500] if body else "",
-            rel_folder,
-            abs_path,
-            1 if attachments else 0,
-            json.dumps(attachment_paths or []),
-        ),
+    # Insert into DB (with retry on lock)
+    email_params = (
+        outlook_id,
+        subject,
+        sender,
+        sender_domain,
+        recipients,
+        date,
+        body[:500] if body else "",
+        rel_folder,
+        abs_path,
+        1 if attachments else 0,
+        json.dumps(attachment_paths or []),
     )
+    email_sql = """INSERT INTO emails
+       (outlook_id, subject, sender, sender_domain, recipients, date,
+        body_preview, folder_saved_to, raw_path, has_attachments, attachment_paths)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+
+    try:
+        conn.execute(email_sql, email_params)
+    except Exception as e:
+        import time
+        for attempt in range(3):
+            try:
+                time.sleep(2)
+                conn.execute(email_sql, email_params)
+                break
+            except Exception:
+                if attempt == 2:
+                    return {"status": "error", "reason": str(e), "outlook_id": outlook_id}
 
     email_id = conn.execute("SELECT last_insert_rowid()").fetchone()[0]
 
@@ -215,14 +226,19 @@ def get_scan_status(conn: sqlite3.Connection) -> dict:
 
 # ── WORKFLOW (for Claude to follow) ──────────────────────────────────────
 """
-CLAUDE IN CHROME WORKFLOW:
+CLAUDE EMAIL SCANNING WORKFLOW:
 
-1. NAVIGATE
+1. CHECK CONNECTOR
+   - Search for a Microsoft 365 / Outlook MCP connector using mcp-registry search
+   - If available and connected, prefer MCP tools for steps 2-4
+   - If not available, use Claude in Chrome browser automation (steps below)
+
+2. NAVIGATE (browser fallback)
    - Use navigate tool to go to: https://outlook.cloud.microsoft/mail/
    - Verify you're on the bw@vft.institute account
    - If auth required, stop and notify the user
 
-2. SCAN INBOX
+3. SCAN INBOX
    - Use read_page to get the email list
    - For each email in the visible list:
      a. Click the email to open it
@@ -231,18 +247,18 @@ CLAUDE IN CHROME WORKFLOW:
      d. Extract body text
      e. Check for attachments
 
-3. FOR EACH EMAIL:
+4. FOR EACH EMAIL:
    - Call save_email() with the extracted metadata
    - If attachments exist:
      - Click each attachment's download button
      - Note the downloaded filename
      - Save attachment paths
 
-4. PAGINATION
+5. PAGINATION
    - Scroll down to load more emails if within the lookback window
    - Continue until you've processed all emails in the window or hit max_emails
 
-5. FINISH
+6. FINISH
    - Print scan summary
    - Trigger deal-project-classifier if new emails were saved
 """
