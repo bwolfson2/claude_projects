@@ -55,6 +55,19 @@ These require local installation. The plugin pre-configures them but they won't 
 
 > **Fallback:** Both WhatsApp and Signal skills also work via Chrome automation (Claude in Chrome scanning WhatsApp Web / Signal Desktop) without any MCP server. The MCP is faster and runs headless.
 
+## Google Sheets API (Service Account)
+
+The `sheet-sync` skill uses a Google service account to push fund data to a shared Google Sheet dashboard. This is separate from MCP — it uses the `gspread` Python library directly.
+
+| Requirement | Details |
+|-------------|---------|
+| **Service account key** | `~/.config/gspread/service_account.json` |
+| **API enabled** | Google Sheets API in your Google Cloud project |
+| **Dependencies** | `pip install gspread google-auth` |
+| **Setup command** | `/vft-fund-tools:sync-sheet setup` |
+
+The dashboard sheet contains tabs for DD Pipeline, Projects, CRM Contacts, and per-deal/per-project detail sheets. See `skills/sheet-sync/references/sheet-structure.md` for full column mappings.
+
 ## Built-in Cowork Connectors
 
 These are activated through the Cowork UI (Customize > Connectors) rather than `.mcp.json`:

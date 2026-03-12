@@ -15,7 +15,7 @@ import os
 import sqlite3
 from pathlib import Path
 
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 
 DDL = """
 -- ============================================================
@@ -193,6 +193,35 @@ CREATE INDEX IF NOT EXISTS idx_doc_extractions_type ON document_extractions(extr
 CREATE INDEX IF NOT EXISTS idx_doc_extractions_key ON document_extractions(extraction_key);
 CREATE INDEX IF NOT EXISTS idx_doc_jobs_dataroom ON document_jobs(dataroom_slug);
 CREATE INDEX IF NOT EXISTS idx_doc_jobs_status ON document_jobs(status);
+
+-- ============================================================
+-- CRM Contacts Table (v4) — unified contacts across all platforms
+-- ============================================================
+CREATE TABLE IF NOT EXISTS contacts (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    name            TEXT NOT NULL,
+    email           TEXT,
+    phone           TEXT,
+    company         TEXT,
+    title           TEXT,
+    slack_handle    TEXT,
+    whatsapp_id     TEXT,
+    signal_id       TEXT,
+    linkedin_url    TEXT,
+    tags            TEXT DEFAULT '[]',                   -- JSON: ["founder", "investor"]
+    context         TEXT,                                -- relationship notes
+    deal_slugs      TEXT DEFAULT '[]',                   -- JSON: linked deals
+    project_slugs   TEXT DEFAULT '[]',                   -- JSON: linked projects
+    first_seen      TEXT,                                -- ISO timestamp
+    last_contacted  TEXT,                                -- most recent interaction
+    source          TEXT,                                -- platform first seen on
+    metadata        TEXT DEFAULT '{{}}',                 -- JSON extras
+    created_at      TEXT DEFAULT (datetime('now')),
+    UNIQUE(email)
+);
+CREATE INDEX IF NOT EXISTS idx_contacts_company ON contacts(company);
+CREATE INDEX IF NOT EXISTS idx_contacts_last_contacted ON contacts(last_contacted);
+CREATE INDEX IF NOT EXISTS idx_contacts_name ON contacts(name);
 
 CREATE INDEX IF NOT EXISTS idx_emails_classified ON emails(classified);
 CREATE INDEX IF NOT EXISTS idx_emails_sender_domain ON emails(sender_domain);

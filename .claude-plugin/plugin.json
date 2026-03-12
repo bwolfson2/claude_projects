@@ -1,7 +1,7 @@
 {
   "name": "vft-fund-tools",
   "description": "VC fund management toolkit: deal flow CRM, dataroom diligence, document processing (RLM), communication scanners (Outlook/Slack/WhatsApp/Signal), project management, and unified dashboards.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "author": {
     "name": "VFT"
   },

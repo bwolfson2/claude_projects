@@ -1,6 +1,6 @@
 # vft-fund-tools
 
-A Claude Code / Cowork plugin for VC fund management. 31 skills and 13 slash commands covering the full fund workflow: deal sourcing, dataroom diligence, document processing, communication scanning, reactive monitoring, project management, and unified dashboards.
+A Claude Code / Cowork plugin for VC fund management. 33 skills and 15 slash commands covering the full fund workflow: deal sourcing, dataroom diligence, document processing, communication scanning, reactive monitoring, CRM contacts, Google Sheets dashboard, project management, and unified dashboards.
 
 ## Install
 
@@ -37,6 +37,12 @@ Open Cowork tab > Customize > Browse plugins > Install `vft-fund-tools`, or uplo
 | `/vft-fund-tools:summarize-thread` | Summarize any conversation thread |
 | `/vft-fund-tools:write-memo` | Generate an IC-ready investment memo |
 
+### CRM & Dashboard
+| Command | Description |
+|---------|-------------|
+| `/vft-fund-tools:add-contact` | Add or update a contact in the CRM |
+| `/vft-fund-tools:sync-sheet` | Push deals, projects, contacts to the Google Sheets dashboard |
+
 ### Monitoring & Automation
 | Command | Description |
 |---------|-------------|
@@ -45,7 +51,7 @@ Open Cowork tab > Customize > Browse plugins > Install `vft-fund-tools`, or uplo
 | `/vft-fund-tools:watch` | Set up scheduled monitoring for all data feeds |
 | `/vft-fund-tools:calendar` | Review upcoming meetings and auto-prep for calls |
 
-## Skills (31, auto-invoked)
+## Skills (33, auto-invoked)
 
 ### Due Diligence
 - **dataroom-intake** — Inventory and categorize dataroom files
@@ -58,11 +64,13 @@ Open Cowork tab > Customize > Browse plugins > Install `vft-fund-tools`, or uplo
 
 ### CRM & Projects
 - **fund-dealflow-orchestrator** — Deal pipeline and CRM management
+- **crm-contacts** — Unified contact CRM across all communication platforms
 - **deal-project-classifier** — Message classification and routing
 - **project-management** — Non-DD project tracking
 - **project-init** — Template-based workspace creation
 - **project-tracker** — Unified cross-workstream dashboard
 - **tracker-sync** — JSON to Excel sync
+- **sheet-sync** — Google Sheets dashboard sync via gspread API
 
 ### Communication
 - **comms-hub** — Master communication orchestrator
@@ -125,9 +133,21 @@ Use `/watch` to automate this on a schedule.
 ## Dependencies
 
 ```bash
-pip install pymupdf openpyxl python-pptx
+pip install pymupdf openpyxl python-pptx gspread google-auth
 # Optional OCR: pip install pytesseract Pillow && brew install tesseract
 ```
+
+## Google Sheets Dashboard
+
+The plugin syncs fund data to a shared Google Sheet with tabs for DD Pipeline, Projects, CRM Contacts, and per-deal/per-project detail sheets.
+
+**Setup:**
+1. Create a Google Cloud service account with Sheets API enabled
+2. Download the JSON key to `~/.config/gspread/service_account.json`
+3. Run `/vft-fund-tools:sync-sheet setup` to create the sheet
+4. Share the sheet with your team
+
+**Google Drive sync:** The repo folder should be synced with Google Drive Desktop for automatic file access.
 
 ## License
 
