@@ -93,7 +93,7 @@ def cmd_pending(args):
                cl.matched_slug, cl.match_type, cl.confidence
         FROM messages m
         LEFT JOIN classification_log cl
-          ON m.source_id = cl.source_id AND m.source = cl.source_type
+          ON m.id = cl.source_id
         WHERE m.classified = 1 AND m.routed_at IS NULL
     """
     params = []

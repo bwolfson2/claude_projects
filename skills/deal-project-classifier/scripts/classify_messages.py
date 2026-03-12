@@ -24,11 +24,14 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-REPO_ROOT = Path(os.environ.get("VFT_REPO_ROOT",
-    Path(__file__).resolve().parents[3]))
+_SCRIPT_ROOT = Path(__file__).resolve().parents[3]
+REPO_ROOT = Path(os.environ.get("VFT_REPO_ROOT", _SCRIPT_ROOT))
 DB_PATH = REPO_ROOT / "fund" / "metadata" / "db" / "ingestion.db"
 DEALS_PATH = REPO_ROOT / "fund" / "crm" / "deals.json"
 PROJECTS_PATH = REPO_ROOT / "projects" / "projects.json"
+
+sys.path.insert(0, str(_SCRIPT_ROOT / "fund" / "metadata"))
+from slug_utils import slugify  # noqa: E402
 
 
 def get_db() -> sqlite3.Connection:
@@ -37,12 +40,6 @@ def get_db() -> sqlite3.Connection:
     conn.execute("PRAGMA foreign_keys=ON")
     conn.row_factory = sqlite3.Row
     return conn
-
-
-def slugify(name: str) -> str:
-    """Convert a name to a URL-safe slug."""
-    slug = re.sub(r'[^a-z0-9]+', '-', name.lower()).strip('-')
-    return slug
 
 
 # ── Subcommand: pending ──────────────────────────────────────────────────
@@ -133,7 +130,8 @@ def cmd_context(args):
         # Get stage/status from deals.json if available
         if DEALS_PATH.exists():
             try:
-                all_deals = json.loads(DEALS_PATH.read_text())
+                raw_deals = json.loads(DEALS_PATH.read_text())
+                all_deals = raw_deals.get("companies", raw_deals) if isinstance(raw_deals, dict) else raw_deals
                 for d in all_deals:
                     if d.get("slug") == r["company_slug"]:
                         deal["stage"] = d.get("stage", "")
@@ -156,7 +154,8 @@ def cmd_context(args):
         }
         if PROJECTS_PATH.exists():
             try:
-                all_projects = json.loads(PROJECTS_PATH.read_text())
+                raw_projects = json.loads(PROJECTS_PATH.read_text())
+                all_projects = raw_projects.get("projects", raw_projects) if isinstance(raw_projects, dict) else raw_projects
                 for p in all_projects:
                     if p.get("slug") == r["project_slug"]:
                         proj["status"] = p.get("status", "")
@@ -381,15 +380,22 @@ def cmd_auto_create(args):
 
     if args.type == "deal":
         # Create in deals.json
-        deals = []
+        deals_data = {}
         if DEALS_PATH.exists():
             try:
-                deals = json.loads(DEALS_PATH.read_text())
+                raw = json.loads(DEALS_PATH.read_text())
+                # Support both flat array and {"companies": [...]} formats
+                if isinstance(raw, list):
+                    deals_data = {"companies": raw}
+                else:
+                    deals_data = raw
             except (json.JSONDecodeError, IOError):
                 pass
 
+        companies = deals_data.get("companies", [])
+
         # Check for duplicate
-        if any(d.get("slug") == slug for d in deals):
+        if any(d.get("slug") == slug for d in companies):
             print(json.dumps({"status": "exists", "type": "deal", "slug": slug}))
             return
 
@@ -403,20 +409,28 @@ def cmd_auto_create(args):
             "last_touch": datetime.now().isoformat()[:10],
             **{k: v for k, v in extra.items() if k not in ("stage",)},
         }
-        deals.append(new_deal)
+        companies.append(new_deal)
+        deals_data["companies"] = companies
         DEALS_PATH.parent.mkdir(parents=True, exist_ok=True)
-        DEALS_PATH.write_text(json.dumps(deals, indent=2))
+        DEALS_PATH.write_text(json.dumps(deals_data, indent=2))
         entity_type = "deal"
 
     else:  # project
-        projects = []
+        projects_data = {}
         if PROJECTS_PATH.exists():
             try:
-                projects = json.loads(PROJECTS_PATH.read_text())
+                raw = json.loads(PROJECTS_PATH.read_text())
+                # Support both flat array and {"projects": [...]} formats
+                if isinstance(raw, list):
+                    projects_data = {"projects": raw}
+                else:
+                    projects_data = raw
             except (json.JSONDecodeError, IOError):
                 pass
 
-        if any(p.get("slug") == slug for p in projects):
+        project_list = projects_data.get("projects", [])
+
+        if any(p.get("slug") == slug for p in project_list):
             print(json.dumps({"status": "exists", "type": "project", "slug": slug}))
             return
 
@@ -431,9 +445,10 @@ def cmd_auto_create(args):
             "last_updated": datetime.now().isoformat()[:10],
             **{k: v for k, v in extra.items() if k not in ("project_type", "category")},
         }
-        projects.append(new_project)
+        project_list.append(new_project)
+        projects_data["projects"] = project_list
         PROJECTS_PATH.parent.mkdir(parents=True, exist_ok=True)
-        PROJECTS_PATH.write_text(json.dumps(projects, indent=2))
+        PROJECTS_PATH.write_text(json.dumps(projects_data, indent=2))
         entity_type = "project"
 
     # If message_id provided, classify it to the new entity

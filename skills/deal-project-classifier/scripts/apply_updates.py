@@ -14,7 +14,6 @@ Usage:
 import argparse
 import json
 import os
-import re
 import sqlite3
 import subprocess
 import sys
@@ -27,17 +26,15 @@ DEALS_PATH = REPO_ROOT / "fund" / "crm" / "deals.json"
 PROJECTS_PATH = REPO_ROOT / "projects" / "projects.json"
 TRACKER_SYNC = REPO_ROOT / "skills" / "tracker-sync" / "scripts" / "sync_to_xlsx.py"
 
+sys.path.insert(0, str(REPO_ROOT / "fund" / "metadata"))
+from slug_utils import slugify  # noqa: E402
+
 
 def get_db() -> sqlite3.Connection:
     conn = sqlite3.connect(str(DB_PATH))
     conn.execute("PRAGMA journal_mode=OFF")
     conn.row_factory = sqlite3.Row
     return conn
-
-
-def slugify(text: str) -> str:
-    slug = re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
-    return re.sub(r"-+", "-", slug)[:40]
 
 
 def load_json(path: Path) -> dict:
