@@ -14,9 +14,12 @@ Usage:
 import argparse
 import json
 import os
-import re
 import sqlite3
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from slug_utils import slugify  # noqa: E402
 
 
 def find_repo_root() -> str:
@@ -36,11 +39,6 @@ def extract_domain(email: str) -> str:
     return email.lower().strip()
 
 
-def slugify(text: str) -> str:
-    """Generate keyword-friendly slug from company/project name."""
-    return re.sub(r"[^a-z0-9]+", " ", text.lower()).strip()
-
-
 def rebuild_company_index(conn: sqlite3.Connection, deals_path: str):
     """Rebuild company_index from deals.json."""
     with open(deals_path, "r") as f:
@@ -48,7 +46,13 @@ def rebuild_company_index(conn: sqlite3.Connection, deals_path: str):
 
     conn.execute("DELETE FROM company_index")
 
-    for company in data.get("companies", []):
+    # Support both flat array and {"companies": [...]} formats
+    if isinstance(data, list):
+        companies = data
+    else:
+        companies = data.get("companies", [])
+
+    for company in companies:
         slug = company["slug"]
         name = company.get("company_name", slug)
 
@@ -63,10 +67,10 @@ def rebuild_company_index(conn: sqlite3.Connection, deals_path: str):
 
         # Build keywords from name, slug, sector, thesis
         keywords = set()
-        keywords.update(slugify(name).split())
+        keywords.update(slugify(name).split("-"))
         keywords.add(slug)
         if company.get("sector"):
-            keywords.update(slugify(company["sector"]).split())
+            keywords.update(slugify(company["sector"]).split("-"))
         for kw in company.get("keywords", []):
             keywords.add(kw.lower().strip())
 
@@ -100,16 +104,22 @@ def rebuild_project_index(conn: sqlite3.Connection, projects_path: str):
 
     conn.execute("DELETE FROM project_index")
 
-    for project in data.get("projects", []):
+    # Support both flat array and {"projects": [...]} formats
+    if isinstance(data, list):
+        project_list = data
+    else:
+        project_list = data.get("projects", [])
+
+    for project in project_list:
         slug = project["slug"]
         name = project.get("project_name", project.get("name", slug))
 
         # Keywords from name, slug, category, explicit keywords
         keywords = set()
-        keywords.update(slugify(name).split())
+        keywords.update(slugify(name).split("-"))
         keywords.add(slug)
         if project.get("category"):
-            keywords.update(slugify(project["category"]).split())
+            keywords.update(slugify(project["category"]).split("-"))
         for kw in project.get("keywords", []):
             keywords.add(kw.lower().strip())
 

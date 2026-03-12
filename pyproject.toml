@@ -1,0 +1,15 @@
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = [
+    "tests",
+    "fund/metadata",
+    "skills/deal-project-classifier/scripts",
+    "skills/reactive-router/scripts",
+    "skills/crm-contacts/scripts",
+    "skills/document-processor/scripts",
+    "skills/sheet-sync/scripts",
+    "skills/comms-hub/scripts",
+    "skills/fund-dealflow-orchestrator/scripts",
+    "skills/message-ingestion/scripts",
+    "skills/project-management/scripts",
+]
